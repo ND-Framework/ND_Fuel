@@ -4,7 +4,7 @@ NDCore = exports["ND_Core"]:GetCoreObject()
 RegisterNetEvent("ND_Fuel:pay", function(amount)
     local player = source
     NDCore.Functions.DeductMoney(math.floor(amount), player, "bank")
-    if config.modernhudnotify then 
+    if GetResourceState("ModernHUD") == "started" then
         TriggerClientEvent("ND_Fuel:modernpay", player, amount)
     else
         TriggerClientEvent("chat:addMessage", player, {
@@ -17,7 +17,7 @@ end)
 RegisterNetEvent("ND_Fuel:jerryCan", function(amount)
     local player = source
     NDCore.Functions.DeductMoney(amount, player, "cash")
-    if config.modernhudnotify then 
+    if GetResourceState("ModernHUD") == "started" then
         TriggerClientEvent("ND_Fuel:modernpay", player, amount)
     else
         TriggerClientEvent("chat:addMessage", player, {
@@ -27,7 +27,7 @@ RegisterNetEvent("ND_Fuel:jerryCan", function(amount)
     end
 end)
 
-if config.modernhudnotify then 
+if GetResourceState("ModernHUD") == "started" then
     RegisterNetEvent("ND_Fuel:modernpay", function(amount)
         local player = source
         NDCore.Functions.DeductMoney(math.floor(amount), player, "bank")
