@@ -4,7 +4,7 @@ config = {
     jerryCanrefillCost = 50, -- The price of the jerrycans refill, this will be calculated and adjusted to how much is left in it.
     fuelCostMultiplier = 1.0, -- 2.0 will double the price of fuel and 1.5 will increase it by half.
 
-    -- Class multipliers. If you want SUVs to use less fuel, you can change it to anything under 1.0, and vise versa.
+    -- Claass multipliers. If you want SUVs to use less fuel, you can change it to anything under 1.0, and vise versa.
     vehicleClasses = {
         [0] = 0.7, -- Compacts
         [1] = 1.1, -- Sedans
