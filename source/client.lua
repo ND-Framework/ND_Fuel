@@ -278,13 +278,26 @@ CreateThread(function()
                     })
                     Wait(600)
                 end
-                if not config.standalone and cost ~= 0 then
-                    TriggerServerEvent("ND_Fuel:pay", cost)
-                    cost = 0
-                end
-            end
-        end
-    end
+				if not config.standalone and cost ~= 0 then
+				if config.modernhudnotify then
+					TriggerServerEvent("ND_Fuel:modernpay", cost)
+						cost = 0
+					RegisterNetEvent("ND_Fuel:notify", function(amount)
+						exports["ModernHUD"]:AndyyyNotify({
+						title = '<font color="#34eb52">Fuel Station</font>',
+						message = 'Total amount deducted ' .. amount .. '.',
+						icon = "fas fa-gas-pump",
+						colorHex = "#34eb52",
+						timeout = 8000})
+						end)
+				else
+						TriggerServerEvent("ND_Fuel:pay", cost)
+						cost = 0
+					end
+				end
+			end
+		end
+	end
 end)
 
 -- pumping fuel on the groud.

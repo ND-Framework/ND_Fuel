@@ -4,17 +4,33 @@ NDCore = exports["ND_Core"]:GetCoreObject()
 RegisterNetEvent("ND_Fuel:pay", function(amount)
     local player = source
     NDCore.Functions.DeductMoney(math.floor(amount), player, "bank")
-    TriggerClientEvent("chat:addMessage", player, {
-        color = {0, 255, 0},
-        args = {"Success", "Paid: $" .. string.format("%.2f", amount) .. " for gas."}
-    })
+    if config.modernhudnotify then 
+        TriggerClientEvent("ND_Fuel:modernpay", player, amount)
+    else
+        TriggerClientEvent("chat:addMessage", player, {
+            color = {0, 255, 0},
+            args = {"Success", "Paid: $" .. string.format("%.2f", amount) .. " for gas."}
+        })
+    end
 end)
 
 RegisterNetEvent("ND_Fuel:jerryCan", function(amount)
     local player = source
     NDCore.Functions.DeductMoney(amount, player, "cash")
-    TriggerClientEvent("chat:addMessage", player, {
-        color = {0, 255, 0},
-        args = {"Success", "Paid: $" .. amount .. " for gas."}
-    })
+    if config.modernhudnotify then 
+        TriggerClientEvent("ND_Fuel:modernpay", player, amount)
+    else
+        TriggerClientEvent("chat:addMessage", player, {
+            color = {0, 255, 0},
+            args = {"Success", "Paid: $" .. amount .. " for gas."}
+        })
+    end
 end)
+
+if config.modernhudnotify then 
+    RegisterNetEvent("ND_Fuel:modernpay", function(amount)
+        local player = source
+        NDCore.Functions.DeductMoney(math.floor(amount), player, "bank")
+        TriggerClientEvent("ND_Fuel:notify", player, string.format("Paid: $%.2f for gas", amount))
+    end)
+end
