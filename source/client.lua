@@ -11,6 +11,7 @@ local wastingFuel = false
 local usingCan = false
 local nearTank = false
 
+
 -- Nozzle Z position based on vehicle class.
 local nozzleBasedOnClass = {
     0.65, -- Compacts
@@ -40,6 +41,7 @@ local nozzleBasedOnClass = {
 -- ND Core object.
 if not config.standalone then
     NDCore = exports["ND_Core"]:GetCoreObject()
+    NDFivePD = exports["ND_FivePD"]:GetCoreObject()
 end
 
 -- Setting the electric vehicle config keys to hashes.
@@ -278,10 +280,28 @@ CreateThread(function()
                     })
                     Wait(600)
                 end
+
+
+                if exports["ND_FivePD"] then
+                    if NDFivePD:IsOnDuty() then
+                        exports['t-notify']:Alert({
+                            style = 'success',
+                            title = 'Success!',
+                            message = 'This fill up was free on behalf of the state.',
+                            duration = 5500
+                        })
+                        Citizen.Trace("Attempted to fire tNotify\n")
+                        cost = 0
+                        return
+                    end
+                end
+
                 if not config.standalone and cost ~= 0 then
                     TriggerServerEvent("ND_Fuel:pay", cost)
                     cost = 0
                 end
+
+
             end
         end
     end
