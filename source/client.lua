@@ -1,4 +1,4 @@
-local FUEL_DECOR = "_ANDY_FUEL_DECORE_"
+local FUEL_DECOR = config.fuel_decor
 local nozzleDropped = false
 local holdingNozzle = false
 local nozzleInVehicle = false
@@ -37,10 +37,13 @@ local nozzleBasedOnClass = {
     0.0 -- Trains
 }
 
--- ND Core object.
-if not config.standalone then
-    ESX = exports["es_extended"]:getSharedObject()
+-- Shared Core object.
+if config.framework == "ESX" then
+    FRWORK = exports["es_extended"]:getSharedObject()
+elseif config.framework == "QB" then
+    FRWORK = exports['qb-core']:GetCoreObject()
 end
+
 
 -- Setting the electric vehicle config keys to hashes.
 for _, vehHash in pairs(config.electricVehicles) do
@@ -255,8 +258,8 @@ CreateThread(function()
                     end
                     fuel = GetFuel(vehicleFueling)
                     cost = cost + ((2.0 / classMultiplier) * config.fuelCostMultiplier) - math.random(0, 100) / 100
-                    if not config.standalone then
-                        local xPlayer = ESX.GetPlayerData() -- Obtén el jugador actual
+                    if config.framework == "ESX" then
+                        local xPlayer = FRWORK.GetPlayerData() -- Obtén el jugador actual
 
                         if xPlayer.money < cost then
                             SendNUIMessage({
@@ -265,6 +268,17 @@ CreateThread(function()
                             vehicleFueling = false
                             break
                         end
+                    elseif config.framework == "QB" then
+                        local Player = FRWORK.Functions.GetPlayerData() -- Obtén los datos del jugador actual
+
+                        if Player.money.cash < cost then
+                            SendNUIMessage({
+                                type = "warn"
+                            })
+                            vehicleFueling = false
+                            break
+                        end
+
                     end
                     if fuel < 97 then
                         SetFuel(vehicleFueling, fuel + ((2.0 / classMultiplier) - math.random(0, 100) / 100))
@@ -280,7 +294,7 @@ CreateThread(function()
                     })
                     Wait(600)
                 end
-                if not config.standalone and cost ~= 0 then
+                if cost ~= 0 then
                     TriggerServerEvent("dsco_fuel:pay", cost)
                     cost = 0
                 end
@@ -302,9 +316,16 @@ CreateThread(function()
                     fuelCost = string.format("%.2f", cost),
                     fuelTank = "0.0"
                 })
-                if not config.standalone then
-                    local xPlayer = ESX.GetPlayerData()
+                if config.framework == "ESX" then
+                    local xPlayer = FRWORK.GetPlayerData()
                     if xPlayer.money < cost then 
+                        SendNUIMessage({
+                            type = "warn"
+                        })
+                    end
+                elseif config.framework == "QB" then
+                    local Player = FRWORK.Functions.GetPlayerData()
+                    if Player.money.cash < cost then
                         SendNUIMessage({
                             type = "warn"
                         })
@@ -312,7 +333,7 @@ CreateThread(function()
                 end
                 Wait(800)
             end
-            if not config.standalone and cost ~= 0 then
+            if cost ~= 0 then
                 TriggerServerEvent("dsco_fuel:pay", cost)
             end
         end
@@ -344,8 +365,8 @@ CreateThread(function()
                     ClearPedTasks(ped)
                 end
                 if IsControlJustPressed(0, 47) then
-                    if not config.standalone then
-                        local xPlayer = ESX.GetPlayerData()
+                    if config.framework == "ESX" then
+                        local xPlayer = FRWORK.GetPlayerData()
                         if xPlayer.money < cost then
                             TriggerServerEvent("dsco_fuel:jerryCan", price)
                             if HasPedGotWeapon(ped, 883325847) then
@@ -354,12 +375,20 @@ CreateThread(function()
                                 GiveWeaponToPed(ped, 883325847, 4500, false, true)
                             end
                         end
-                    else
-                        if HasPedGotWeapon(ped, 883325847) then
-                            SetPedAmmo(ped, 883325847, 4500)
-                        else
-                            GiveWeaponToPed(ped, 883325847, 4500, false, true)
-                        end
+                    elseif config.framework == "QB" then
+                        local Player = FRWORK.Functions.GetPlayerData() -- Obtén los datos del jugador actual
+
+                        if Player.money.cash < cost then
+                            TriggerServerEvent("dsco_fuel:jerryCan", price)
+    
+                            local ped = GetPlayerPed(-1)
+    
+                            if HasPedGotWeapon(ped, GetHashKey("WEAPON_PETROLCAN")) then
+                                SetPedAmmo(ped, GetHashKey("WEAPON_PETROLCAN"), 4500)
+                            else
+                                GiveWeaponToPed(ped, GetHashKey("WEAPON_PETROLCAN"), 4500, false, true)
+                            end
+                        end    
                     end
                 end
             elseif holdingNozzle and not nearTank and pumpHandle == usedPump then
@@ -582,6 +611,7 @@ CreateThread(function()
                         usingCan = false
                         if IsEntityPlayingAnim(ped, "timetable@gardener@filling_can", "gar_ig_5_filling_can", 3) then
                             ClearPedTasks(ped)
+                            TriggerServerEvent("dsco_fuel:removeJerryCan")
                         end
                     end
                 end
