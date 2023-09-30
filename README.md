@@ -1,6 +1,3 @@
-<p align="center">
-  <img src="https://media.discordapp.net/attachments/1145915149627166781/1156860638799347724/image.png" />
-</p>
 <p align='center'><b><a href="https://www.youtube.com/watch?v=tQ0cL9qGqbA">Video de Vista Previa</a></b>
 
 ## Características Destacadas:
@@ -8,12 +5,10 @@
 * Interfaz de bomba
 * Personalización del consumo de combustible
 * Compra y recarga de bidones
-## Modificaciones:
-* Convertido a esx
 
 
 ## ¿Necesitas ayuda?
-[![¿Necesitas ayuda?](https://media.discordapp.net/attachments/1145915149627166781/1156860638799347724/image.png)](https://discord.gg/5UUJ2ffVY4)
+https://discord.gg/5UUJ2ffVY4
 
 <a href="https://www.youtube.com/watch?v=tQ0cL9qGqbA"><img src="https://cdn.discordapp.com/attachments/1143757665374318752/1157084152949125280/SPOILER_image.png" /></a>
 
@@ -28,7 +23,7 @@ Este proyecto se basa en [ND_Fuel](https://github.com/ND-Framework/ND_Fuel), cre
 DSCO Network ha realizado modificaciones en este proyecto. Asegúrate de visitar el enlace del creador original para obtener la versión original y brindarle el crédito que se merece.
 
 ## Cambios Realizados:
-- [Enumera aquí los cambios específicos que has realizado desde el proyecto original.]
+- Convertido a esx
 
 ## Código Fuente:
 El código fuente correspondiente a esta versión se encuentra disponible en este repositorio.
