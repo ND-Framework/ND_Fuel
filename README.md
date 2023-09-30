@@ -15,7 +15,7 @@ https://discord.gg/5UUJ2ffVY4
 ---
 
 ## Modificado por:
-DSco Network
+DSCO Network
 
 ## Créditos al Creador Original:
 Este proyecto se basa en [ND_Fuel](https://github.com/ND-Framework/ND_Fuel), creado por [ND-Framework].
@@ -23,7 +23,7 @@ Este proyecto se basa en [ND_Fuel](https://github.com/ND-Framework/ND_Fuel), cre
 DSCO Network ha realizado modificaciones en este proyecto. Asegúrate de visitar el enlace del creador original para obtener la versión original y brindarle el crédito que se merece.
 
 ## Cambios Realizados:
-- Convertido a esx
+- Convertido a esx Y qbcore
 
 ## Código Fuente:
 El código fuente correspondiente a esta versión se encuentra disponible en este repositorio.
