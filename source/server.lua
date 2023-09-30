@@ -1,20 +1,32 @@
-NDCore = exports["ND_Core"]:GetCoreObject()
--- NDCore.Functions.VersionChecker("ND_Fuel", GetCurrentResourceName(), "https://github.com/ND-Framework/ND_Framework", "https://raw.githubusercontent.com/ND-Framework/ND_Framework/main/ND_Fuel/fxmanifest.lua")
+ESX = exports["es_extended"]:getSharedObject()
 
-RegisterNetEvent("ND_Fuel:pay", function(amount)
-    local player = source
-    NDCore.Functions.DeductMoney(math.floor(amount), player, "bank")
-    TriggerClientEvent("chat:addMessage", player, {
-        color = {0, 255, 0},
-        args = {"Success", "Paid: $" .. string.format("%.2f", amount) .. " for gas."}
-    })
+RegisterNetEvent("dsco_fuel:pay", function(amount)
+    local xPlayer = ESX.GetPlayerFromId(source)
+    local moneyType = 'money' -- 'money' si se deduce del banco, 'cash' si se deduce del efectivo
+
+    if xPlayer then
+        if moneyType == 'money' then
+            xPlayer.removeAccountMoney('bank', math.floor(amount))
+        else
+            xPlayer.removeMoney(math.floor(amount))
+        end
+
+        TriggerClientEvent("chat:addMessage", source, {
+            color = {0, 255, 0},
+            args = {"Éxito", "Pagado: $" .. string.format("%.2f", amount) .. " por gasolina."}
+        })
+    end
 end)
 
-RegisterNetEvent("ND_Fuel:jerryCan", function(amount)
-    local player = source
-    NDCore.Functions.DeductMoney(amount, player, "cash")
-    TriggerClientEvent("chat:addMessage", player, {
-        color = {0, 255, 0},
-        args = {"Success", "Paid: $" .. amount .. " for gas."}
-    })
+RegisterNetEvent("dsco_fuel:jerryCan", function(amount)
+    local xPlayer = ESX.GetPlayerFromId(source)
+
+    if xPlayer then
+        xPlayer.removeMoney(amount)
+
+        TriggerClientEvent("chat:addMessage", source, {
+            color = {0, 255, 0},
+            args = {"Éxito", "Pagado: $" .. amount .. " por gasolina."}
+        })
+    end
 end)

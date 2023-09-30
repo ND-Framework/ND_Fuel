@@ -1,3 +1,5 @@
+shared_script '@WaveShield/resource/waveshield.lua' --this line was automatically written by WaveShield
+
 -- For support join my discord: https://discord.gg/Z9Mxu72zZ6
 
 author "Andyyy#7666, N1K0#0001"
