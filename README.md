@@ -29,6 +29,6 @@ DSCO Network ha realizado modificaciones en este proyecto. Asegúrate de visitar
 El código fuente correspondiente a esta versión se encuentra disponible en este repositorio.
 
 ## Licencia
-Este proyecto se encuentra bajo la [Licencia Pública General de GNU (GPL) Versión 3.0](https://www.gnu.org/licenses/gpl-3.0.html). Puedes encontrar más detalles en el archivo [LICENSE](LICENSE) dentro de este repositorio.
+Este proyecto se encuentra bajo la [Licencia Pública General de GNU (GPL) Versión 3.0](https://www.gnu.org/licenses/gpl-3.0.html). Puedes encontrar más detalles en el archivo [LICENSE](license) dentro de este repositorio.
 
 **Nota:** En lugar de crear un nuevo repositorio, hemos realizado cambios en el proyecto original utilizando la función de "fork" disponible en GitHub, lo que simplifica el cumplimiento de las licencias de código abierto y mantiene un linaje claro del proyecto.
