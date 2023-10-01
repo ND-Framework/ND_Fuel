@@ -1,5 +1,5 @@
 config = {
-    framework = "ESX", -- ESX or (QB Coming soon)
+    framework = "ESX", -- ESX or QB
     moneytype = "money",
     jerryCanPrice = 100, -- jery cans can be purchased from the gas statoin.
     jerryCanrefillCost = 50, -- The price of the jerrycans refill, this will be calculated and adjusted to how much is left in it.
