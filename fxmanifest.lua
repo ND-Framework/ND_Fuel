@@ -1,6 +1,6 @@
 author "Andyyy#7666, N1K0#0001, DSCO-Network"
 description "ESX/QB fuel with hose & nozle"
-version "1.0.1"
+version "1.1.0"
 
 fx_version "cerulean"
 game "gta5"
