@@ -1,10 +1,10 @@
 config = {
     framework = "ESX", -- ESX or (QB Coming soon)
-    moneytype = "money"
+    moneytype = "money",
     jerryCanPrice = 100, -- jery cans can be purchased from the gas statoin.
     jerryCanrefillCost = 50, -- The price of the jerrycans refill, this will be calculated and adjusted to how much is left in it.
     fuelCostMultiplier = 1.0, -- 2.0 will double the price of fuel and 1.5 will increase it by half.
-    fuel_decor = "_ANDY_FUEL_DECORE_"
+    fuel_decor = "_ANDY_FUEL_DECORE_",
 
     -- Class multipliers. If you want SUVs to use less fuel, you can change it to anything under 1.0, and vise versa.
     vehicleClasses = {
