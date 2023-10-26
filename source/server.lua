@@ -21,7 +21,7 @@ RegisterNetEvent("dsco_fuel:pay", function(amount)
             xPlayer.showNotification(msg)
         end
     elseif config.framework == "QB" then
-        local Player = QBCore.Functions.GetPlayer(source) -- Obtén al jugador actual
+        local Player = FRWORK.Functions.GetPlayer(source) -- Obtén al jugador actual
 
 if Player then
     if moneyType == 'bank' then
@@ -44,10 +44,11 @@ end)
 
 RegisterNetEvent("dsco_fuel:jerryCan", function(amount)
     if config.framework == "ESX" then
-        local xPlayer = ESX.GetPlayerFromId(source)
+        local xPlayer = FRWORK.GetPlayerFromId(source)
 
         if xPlayer then
             xPlayer.removeMoney(amount)
+            xPlayer.addInventoryItem('WEAPON_PETROLCAN', 1)
 
             TriggerClientEvent("chat:addMessage", source, {
                 color = {0, 255, 0},
@@ -55,8 +56,7 @@ RegisterNetEvent("dsco_fuel:jerryCan", function(amount)
             })
         end
     elseif config.framework == "QB" then
-        local Player = QBCore.Functions.GetPlayer(source)
-
+        local Player = FRWORK.Functions.GetPlayer(source)
         if Player then
             Player.Functions.RemoveMoney("cash", amount)
 
@@ -69,17 +69,17 @@ RegisterNetEvent("dsco_fuel:jerryCan", function(amount)
 end)
 
 RegisterNetEvent("dsco_fuel:removeJerryCan", function()
-if config.framework == "QB" then
+    if config.framework == "QB" then
         local xPlayer = FRWORK.Functions.GetPlayer(source)
         if xPlayer then
             xPlayer.Functions.RemoveItem('WEAPON_PETROLCAN', 1)
             TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['WEAPON_PETROLCAN'], "remove")
         end
-end
-if config.framework == "ESX" then
+    end
+    if config.framework == "ESX" then
         local xPlayer = FRWORK.GetPlayerFromId(source)
         if xPlayer then
             xPlayer.removeInventoryItem("WEAPON_PETROLCAN", 1)
         end
-end
+    end
 end)
