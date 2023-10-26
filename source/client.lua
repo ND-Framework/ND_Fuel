@@ -366,19 +366,18 @@ CreateThread(function()
                 end
                 if IsControlJustPressed(0, 47) then
                     if config.framework == "ESX" then
-                        local xPlayer = FRWORK.GetPlayerData()
-                        if xPlayer.money < cost then
-                            TriggerServerEvent("dsco_fuel:jerryCan", price)
-                            if HasPedGotWeapon(ped, 883325847) then
-                                SetPedAmmo(ped, 883325847, 4500)
-                            else
-                                GiveWeaponToPed(ped, 883325847, 4500, false, true)
-                            end
+                        TriggerServerEvent("dsco_fuel:jerryCan", price)
+                        if HasPedGotWeapon(ped, 883325847) then
+                            SetPedAmmo(ped, 883325847, 4500)
+                        else
+                            GiveWeaponToPed(ped, 883325847, 4500, false, true)
+                            SetPedAmmo(ped, 883325847, 4500)
                         end
+                    
                     elseif config.framework == "QB" then
                         local Player = FRWORK.Functions.GetPlayerData() -- Obtén los datos del jugador actual
 
-                        if Player.money.cash < cost then
+                        if Player.money.cash < price then
                             TriggerServerEvent("dsco_fuel:jerryCan", price)
     
                             local ped = GetPlayerPed(-1)
