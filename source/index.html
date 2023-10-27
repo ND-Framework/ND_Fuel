@@ -12,69 +12,46 @@
         }
         body {
             overflow: hidden;
+            background: linear-gradient(rgba(128, 0, 128, 0.7), rgba(128, 0, 128, 0.7)); /* Fondo con degradado morado neon */
+            margin: 0;
+            padding: 0;
         }
         .pumpDisplay {
             display: none;
+            text-align: center;
             position: absolute;
-            margin: auto;
-            right: 0;
-            left: 0;
             bottom: 2%;
-            height: 15%;
-            width: auto;
-            user-select: none;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7); /* Fondo con degradado morado neon y transparencia */
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(128, 0, 128, 1);
         }
-        .displayBackground {
-            position: absolute;
-            margin: auto;
-            right: 0;
-            left: 0;
-            width: auto;
-            height: 100%;
+        .fuelSymbol {
+            font-family: "digital-counter-7", sans-serif;
+            font-size: 3vh; /* Reduce el tamaño de fuente */
+            color: rgba(128, 0, 128, 1);
+            text-shadow: 0 0 10px rgba(128, 0, 128, 1); /* Texto con sombra neon */
+            display: inline; /* Para que el símbolo esté en la misma línea que el valor */
         }
         .fuelCurrency {
-            position: absolute;
-            margin: auto;
-            left: 45%;
-            top: 20%;
-            text-align: center;
-
-            font-family: "Lucida Console", "Courier New", monospace;
-            font-size: 4vh;
-            color: #ffffff;
-        }
-        .fuelCost {
-            position: absolute;
-            margin: auto;
-            right: 45.2%;
-            top: 18%;
-            text-align: center;
-
             font-family: "digital-counter-7", sans-serif;
-            font-size: 4vh;
-            color: #060608;
+            font-size: 3vh; /* Reduce el tamaño de fuente */
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(128, 0, 128, 1); /* Texto con sombra neon */
+            display: inline; /* Para que el símbolo esté en la misma línea que el valor */
         }
         .fuelPrecentage {
-            position: absolute;
-            margin: auto;
-            left: 45%;
-            top: 50%;
-            text-align: center;
-
-            font-family: "Lucida Console", "Courier New", monospace;
-            font-size: 4vh;
-            color: #ffffff;
-        }
-        .fuelTank {
-            position: absolute;
-            margin: auto;
-            right: 45.2%;
-            top: 48%;
-            text-align: center;
-
             font-family: "digital-counter-7", sans-serif;
-            font-size: 4vh;
-            color: #060608;
+            font-size: 3vh; /* Reduce el tamaño de fuente */
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(128, 0, 128, 1); /* Texto con sombra neon */
+            display: inline; /* Para que el símbolo esté en la misma línea que el valor */
+        }
+        .fuelGroup {
+            display: inline-block; /* Para agrupar elementos en una línea */
+            margin: 0 10px; /* Espacio entre grupos de elementos */
         }
         @keyframes warn {
             0%   {color: red;}
@@ -88,9 +65,12 @@
         }
     </style>
     <div class="pumpDisplay">
-        <img class="displayBackground" src="https://i.imgur.com/wkMX6FG.png">
-        <p class="fuelCurrency">$</p><p class="fuelCost">0.00</p>
-        <p class="fuelPrecentage">%</p><p class="fuelTank">0.00</p>
+        <div class="fuelGroup">
+            <span class="fuelSymbol">$</span><span class="fuelCurrency">0.00</span>
+        </div>
+        <div class="fuelGroup">
+            <span class="fuelSymbol">%</span><span class="fuelPrecentage">0.00</span>
+        </div>
     </div>
     <script>
         window.addEventListener("message", function(event) {
@@ -100,12 +80,12 @@
                     $(".pumpDisplay").fadeIn("fast");
                 } else {
                     $(".pumpDisplay").fadeOut("slow");
-                };
-            };
+                }
+            }
             if (item.type === "update") {
-                $(".fuelCost").text(item.fuelCost);
-                $(".fuelTank").text(item.fuelTank);
-            };
+                $(".fuelCurrency").text(item.fuelCost);
+                $(".fuelPrecentage").text(item.fuelTank);
+            }
             if (item.type === "warn") {
                 $(".fuelCurrency").toggleClass("flashRed");
             }

@@ -1,20 +1,85 @@
-NDCore = exports["ND_Core"]:GetCoreObject()
--- NDCore.Functions.VersionChecker("ND_Fuel", GetCurrentResourceName(), "https://github.com/ND-Framework/ND_Framework", "https://raw.githubusercontent.com/ND-Framework/ND_Framework/main/ND_Fuel/fxmanifest.lua")
+if config.framework == "ESX" then
+    FRWORK = exports["es_extended"]:getSharedObject()
+elseif config.framework == "QB" then
+    FRWORK = exports['qb-core']:GetCoreObject()
+end
 
-RegisterNetEvent("ND_Fuel:pay", function(amount)
-    local player = source
-    NDCore.Functions.DeductMoney(math.floor(amount), player, "bank")
-    TriggerClientEvent("chat:addMessage", player, {
+RegisterNetEvent("dsco_fuel:pay", function(amount)
+    local moneyType = config.moneytype
+    if config.framework == "ESX" then
+        local xPlayer = FRWORK.GetPlayerFromId(source)
+        
+        if xPlayer then
+           if moneyType == 'bank' then
+               xPlayer.removeAccountMoney('bank', math.floor(amount))
+            elseif moneyType == 'money' then
+                xPlayer.removeMoney(math.floor(amount))
+            else
+                print("Error in money account")
+            end
+
+            xPlayer.showNotification(msg)
+        end
+    elseif config.framework == "QB" then
+        local Player = FRWORK.Functions.GetPlayer(source) -- Obtén al jugador actual
+
+if Player then
+    if moneyType == 'bank' then
+        Player.Functions.RemoveMoney('bank', math.floor(amount))
+    elseif moneyType == 'money' then
+        Player.Functions.RemoveMoney('cash', math.floor(amount))
+    else
+        print("Error en el tipo de dinero")
+    end
+
+    TriggerClientEvent("chat:addMessage", source, {
         color = {0, 255, 0},
-        args = {"Success", "Paid: $" .. string.format("%.2f", amount) .. " for gas."}
+        args = {"Éxito", "Pagado: $" .. string.format("%.2f", amount) .. " por gasolina."}
     })
+end
+
+end
+
 end)
 
-RegisterNetEvent("ND_Fuel:jerryCan", function(amount)
-    local player = source
-    NDCore.Functions.DeductMoney(amount, player, "cash")
-    TriggerClientEvent("chat:addMessage", player, {
-        color = {0, 255, 0},
-        args = {"Success", "Paid: $" .. amount .. " for gas."}
-    })
+RegisterNetEvent("dsco_fuel:jerryCan", function(amount)
+    if config.framework == "ESX" then
+        local xPlayer = FRWORK.GetPlayerFromId(source)
+
+        if xPlayer then
+            xPlayer.removeMoney(amount)
+            xPlayer.addInventoryItem('WEAPON_PETROLCAN', 1)
+
+            TriggerClientEvent("chat:addMessage", source, {
+                color = {0, 255, 0},
+                args = {"Éxito", "Pagado: $" .. amount .. " por gasolina."}
+            })
+        end
+    elseif config.framework == "QB" then
+        local Player = FRWORK.Functions.GetPlayer(source)
+        if Player then
+            Player.Functions.RemoveMoney("cash", amount)
+
+            TriggerClientEvent("chat:addMessage", source, {
+                color = {0, 255, 0},
+                args = {"Éxito", "Pagado: $" .. amount .. " por gasolina."}
+            })
+        end
+    end
+end)
+
+RegisterNetEvent("dsco_fuel:removeJerryCan", function()
+    if config.framework == "QB" then
+        local xPlayer = FRWORK.Functions.GetPlayer(source)
+        if xPlayer then
+            xPlayer.Functions.RemoveItem('WEAPON_PETROLCAN', 1)
+            TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['WEAPON_PETROLCAN'], "remove")
+        end
+    end
+    if config.framework == "ESX" then
+        local xPlayer = FRWORK.GetPlayerFromId(source)
+        if xPlayer then
+            xPlayer.removeInventoryItem("WEAPON_PETROLCAN", 1)
+        end
+    end
 end)

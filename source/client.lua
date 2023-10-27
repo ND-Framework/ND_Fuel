@@ -1,4 +1,4 @@
-local FUEL_DECOR = "_ANDY_FUEL_DECORE_"
+local FUEL_DECOR = config.fuel_decor
 local nozzleDropped = false
 local holdingNozzle = false
 local nozzleInVehicle = false
@@ -37,10 +37,13 @@ local nozzleBasedOnClass = {
     0.0 -- Trains
 }
 
--- ND Core object.
-if not config.standalone then
-    NDCore = exports["ND_Core"]:GetCoreObject()
+-- Shared Core object.
+if config.framework == "ESX" then
+    FRWORK = exports["es_extended"]:getSharedObject()
+elseif config.framework == "QB" then
+    FRWORK = exports['qb-core']:GetCoreObject()
 end
+
 
 -- Setting the electric vehicle config keys to hashes.
 for _, vehHash in pairs(config.electricVehicles) do
@@ -255,14 +258,27 @@ CreateThread(function()
                     end
                     fuel = GetFuel(vehicleFueling)
                     cost = cost + ((2.0 / classMultiplier) * config.fuelCostMultiplier) - math.random(0, 100) / 100
-                    if not config.standalone then
-                        if NDCore.Functions.GetSelectedCharacter().bank < cost then
+                    if config.framework == "ESX" then
+                        local xPlayer = FRWORK.GetPlayerData() -- Obtén el jugador actual
+
+                        if xPlayer.money < cost then
                             SendNUIMessage({
                                 type = "warn"
                             })
                             vehicleFueling = false
                             break
                         end
+                    elseif config.framework == "QB" then
+                        local Player = FRWORK.Functions.GetPlayerData() -- Obtén los datos del jugador actual
+
+                        if Player.money.cash < cost then
+                            SendNUIMessage({
+                                type = "warn"
+                            })
+                            vehicleFueling = false
+                            break
+                        end
+
                     end
                     if fuel < 97 then
                         SetFuel(vehicleFueling, fuel + ((2.0 / classMultiplier) - math.random(0, 100) / 100))
@@ -278,8 +294,8 @@ CreateThread(function()
                     })
                     Wait(600)
                 end
-                if not config.standalone and cost ~= 0 then
-                    TriggerServerEvent("ND_Fuel:pay", cost)
+                if cost ~= 0 then
+                    TriggerServerEvent("dsco_fuel:pay", cost)
                     cost = 0
                 end
             end
@@ -300,8 +316,16 @@ CreateThread(function()
                     fuelCost = string.format("%.2f", cost),
                     fuelTank = "0.0"
                 })
-                if not config.standalone then
-                    if NDCore.Functions.GetSelectedCharacter().bank < cost then 
+                if config.framework == "ESX" then
+                    local xPlayer = FRWORK.GetPlayerData()
+                    if xPlayer.money < cost then 
+                        SendNUIMessage({
+                            type = "warn"
+                        })
+                    end
+                elseif config.framework == "QB" then
+                    local Player = FRWORK.Functions.GetPlayerData()
+                    if Player.money.cash < cost then
                         SendNUIMessage({
                             type = "warn"
                         })
@@ -309,8 +333,8 @@ CreateThread(function()
                 end
                 Wait(800)
             end
-            if not config.standalone and cost ~= 0 then
-                TriggerServerEvent("ND_Fuel:pay", cost)
+            if cost ~= 0 then
+                TriggerServerEvent("dsco_fuel:pay", cost)
             end
         end
     end
@@ -329,37 +353,45 @@ CreateThread(function()
                 local weapon = HasPedGotWeapon(ped, 883325847)
                 local price = config.jerryCanPrice
                 if not weapon then
-                    jerryCanText = " \n$" .. price .. " buy Jerry Can [G]"
+                    jerryCanText = " \n$" .. price .. " Comprar Bidon [G]"
                 elseif weapon and GetSelectedPedWeapon(ped) == 883325847 and ammo < 4500 then
                     price = math.floor(config.jerryCanrefillCost - (config.jerryCanrefillCost / (4500 / ammo)))
-                    jerryCanText = " \n$" .. price .. " refill Jerry Can [G]"
+                    jerryCanText = " \n$" .. price .. " Rellenar Bidon [G]"
                 end
-                DrawText3D(pump.x, pump.y, pump.z + 1.2, "Grab Nozzle [E]" .. jerryCanText)
+                DrawText3D(pump.x, pump.y, pump.z + 1.2, "Agarrar manguera [E]" .. jerryCanText)
                 if IsControlJustPressed(0, 51) then
                     grabNozzleFromPump()
                     Wait(1000)
                     ClearPedTasks(ped)
                 end
                 if IsControlJustPressed(0, 47) then
-                    if not config.standalone then
-                        if NDCore.Functions.GetSelectedCharacter().bank > price then
-                            TriggerServerEvent("ND_Fuel:jerryCan", price)
-                            if HasPedGotWeapon(ped, 883325847) then
-                                SetPedAmmo(ped, 883325847, 4500)
-                            else
-                                GiveWeaponToPed(ped, 883325847, 4500, false, true)
-                            end
-                        end
-                    else
+                    if config.framework == "ESX" then
+                        TriggerServerEvent("dsco_fuel:jerryCan", price)
                         if HasPedGotWeapon(ped, 883325847) then
                             SetPedAmmo(ped, 883325847, 4500)
                         else
                             GiveWeaponToPed(ped, 883325847, 4500, false, true)
+                            SetPedAmmo(ped, 883325847, 4500)
                         end
+                    
+                    elseif config.framework == "QB" then
+                        local Player = FRWORK.Functions.GetPlayerData() -- Obtén los datos del jugador actual
+
+                        if Player.money.cash < price then
+                            TriggerServerEvent("dsco_fuel:jerryCan", price)
+    
+                            local ped = GetPlayerPed(-1)
+    
+                            if HasPedGotWeapon(ped, GetHashKey("WEAPON_PETROLCAN")) then
+                                SetPedAmmo(ped, GetHashKey("WEAPON_PETROLCAN"), 4500)
+                            else
+                                GiveWeaponToPed(ped, GetHashKey("WEAPON_PETROLCAN"), 4500, false, true)
+                            end
+                        end    
                     end
                 end
             elseif holdingNozzle and not nearTank and pumpHandle == usedPump then
-                DrawText3D(pump.x, pump.y, pump.z + 1.2, "Return Nozzle [E]")
+                DrawText3D(pump.x, pump.y, pump.z + 1.2, "Devolver manguera [E]")
                 if IsControlJustPressed(0, 51) then
                     LoadAnimDict("anim@am_hold_up@male")
                     TaskPlayAnim(ped, "anim@am_hold_up@male", "shoplift_high", 2.0, 8.0, -1, 50, 0, 0, 0, 0)
@@ -406,7 +438,7 @@ CreateThread(function()
                     returnNozzleToPump()
                 end
                 if nozzleDropped and #(nozzleLocation - pedCoords) < 1.5 then
-                    DrawText3D(nozzleLocation.x, nozzleLocation.y, nozzleLocation.z, "Grab Nozzle [E]")
+                    DrawText3D(nozzleLocation.x, nozzleLocation.y, nozzleLocation.z, "Agarrar manguera [E]")
                     if IsControlJustPressed(0, 51) then
                         LoadAnimDict("anim@mp_snowball")
                         TaskPlayAnim(ped, "anim@mp_snowball", "pickup_snowball", 2.0, 8.0, -1, 50, 0, 0, 0, 0)
@@ -497,7 +529,7 @@ CreateThread(function()
                 if tankPosition and #(pedCoords - tankPosition) < 1.2 then
                     if not nozzleInVehicle and holdingNozzle then
                         nearTank = true
-                        DrawText3D(tankPosition.x + textModifiedPosition.x, tankPosition.y + textModifiedPosition.y, tankPosition.z + zPos + textModifiedPosition.z, "Attach Nozzle [E]")
+                        DrawText3D(tankPosition.x + textModifiedPosition.x, tankPosition.y + textModifiedPosition.y, tankPosition.z + zPos + textModifiedPosition.z, "Poner manguera [E]")
                         if IsControlJustPressed(0, 51) then
                             LoadAnimDict("timetable@gardener@filling_can")
                             TaskPlayAnim(ped, "timetable@gardener@filling_can", "gar_ig_5_filling_can", 2.0, 8.0, -1, 50, 0, 0, 0, 0)
@@ -507,7 +539,7 @@ CreateThread(function()
                             ClearPedTasks(ped)
                         end
                     elseif nozzleInVehicle then
-                        DrawText3D(tankPosition.x + textModifiedPosition.x, tankPosition.y + textModifiedPosition.y, tankPosition.z + zPos + textModifiedPosition.z, "Grab Nozzle [E]")
+                        DrawText3D(tankPosition.x + textModifiedPosition.x, tankPosition.y + textModifiedPosition.y, tankPosition.z + zPos + textModifiedPosition.z, "Agarrar manguera [E]")
                         if IsControlJustPressed(0, 51) then
                             LoadAnimDict("timetable@gardener@filling_can")
                             TaskPlayAnim(ped, "timetable@gardener@filling_can", "gar_ig_5_filling_can", 2.0, 8.0, -1, 50, 0, 0, 0, 0)
@@ -562,7 +594,7 @@ CreateThread(function()
                 tankPosition = GetWorldPositionOfEntityBone(veh, tankBone)
                 if tankPosition and #(pedCoords - tankPosition) < distance then
                     local fuel = GetFuel(veh)
-                    DrawText3D(tankPosition.x, tankPosition.y, tankPosition.z + zPos, math.floor(fuel) .. "% refuel [E]")
+                    DrawText3D(tankPosition.x, tankPosition.y, tankPosition.z + zPos, math.floor(fuel) .. "% rellenar [E]")
                     local ammo = GetAmmoInPedWeapon(ped, 883325847)
                     if IsControlPressed(0, 51) and ammo > 0 then
                         if not IsEntityPlayingAnim(ped, "timetable@gardener@filling_can", "gar_ig_5_filling_can", 3) then
@@ -578,6 +610,7 @@ CreateThread(function()
                         usingCan = false
                         if IsEntityPlayingAnim(ped, "timetable@gardener@filling_can", "gar_ig_5_filling_can", 3) then
                             ClearPedTasks(ped)
+                            TriggerServerEvent("dsco_fuel:removeJerryCan")
                         end
                     end
                 end
@@ -598,7 +631,7 @@ CreateThread(function()
         SetBlipDisplay(blip, 4)
         SetBlipAsShortRange(blip, true)
         BeginTextCommandSetBlipName("STRING")
-        AddTextComponentString("Gas Station")
+        AddTextComponentString("Gasolinera")
         EndTextCommandSetBlipName(blip)
     end
 end)
