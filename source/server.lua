@@ -1,20 +1,13 @@
-NDCore = exports["ND_Core"]:GetCoreObject()
--- NDCore.Functions.VersionChecker("ND_Fuel", GetCurrentResourceName(), "https://github.com/ND-Framework/ND_Framework", "https://raw.githubusercontent.com/ND-Framework/ND_Framework/main/ND_Fuel/fxmanifest.lua")
+local NDCore = exports["ND_Core"]
 
 RegisterNetEvent("ND_Fuel:pay", function(amount)
-    local player = source
-    NDCore.Functions.DeductMoney(math.floor(amount), player, "bank")
-    TriggerClientEvent("chat:addMessage", player, {
-        color = {0, 255, 0},
-        args = {"Success", "Paid: $" .. string.format("%.2f", amount) .. " for gas."}
-    })
-end)
+    local src = source
+    local player = NDCore:getPlayer(src)
+    if not player then return end
 
-RegisterNetEvent("ND_Fuel:jerryCan", function(amount)
-    local player = source
-    NDCore.Functions.DeductMoney(amount, player, "cash")
-    TriggerClientEvent("chat:addMessage", player, {
-        color = {0, 255, 0},
-        args = {"Success", "Paid: $" .. amount .. " for gas."}
+    player.deductMoney("bank", math.floor(amount), "Gas Station")
+    player.notify({
+        title = ("Paid: $%.2f for gas."):format(amount),
+        type = "inform"
     })
 end)

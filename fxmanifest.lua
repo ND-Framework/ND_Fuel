@@ -10,7 +10,8 @@ lua54 "yes"
 
 files {
     "source/digital-counter-7.ttf",
-	"source/index.html"
+    "source/background.png",
+    "source/index.html"
 }
 ui_page "source/index.html"
 

@@ -37,11 +37,6 @@ local nozzleBasedOnClass = {
     0.0 -- Trains
 }
 
--- ND Core object.
-if not config.standalone then
-    NDCore = exports["ND_Core"]:GetCoreObject()
-end
-
 -- Setting the electric vehicle config keys to hashes.
 for _, vehHash in pairs(config.electricVehicles) do
     config.electricVehicles[vehHash] = vehHash
@@ -227,62 +222,70 @@ CreateThread(function()
     end
 end)
 
+local function vehicleIsFueling()
+    local classMultiplier = config.vehicleClasses[GetVehicleClass(vehicleFueling)]
+    local cost = 0
+    local adjustedFuel = nil
+    
+    while vehicleFueling do
+        local fuel = GetFuel(vehicleFueling)
+        if not DoesEntityExist(vehicleFueling) then
+            dropNozzle()
+
+            vehicleFueling = false
+            break
+        end
+        
+        local newCost = ((2.0 / classMultiplier) * config.fuelCostMultiplier) - math.random(0, 100) / 100
+        local player = exports["ND_Core"]:getPlayer()
+        
+        if (player and player.bank or 0) < cost then
+            SendNUIMessage({
+                type = "warn"
+            })
+
+            vehicleFueling = false
+            break
+        end
+
+        fuel = fuel + classMultiplier*50
+        if fuel < 100 then
+            cost = cost + newCost
+        end
+
+        if fuel > 100 or fuel == 100 then
+            fuel = 100.0
+            SetFuel(vehicleFueling, fuel)
+            SendNUIMessage({
+                type = "update",
+                fuelCost = string.format("%.2f", cost),
+                fuelTank = string.format("%.2f", fuel)
+            })
+
+            vehicleFueling = false
+            break
+        end
+
+        SetFuel(vehicleFueling, fuel)
+        SendNUIMessage({
+            type = "update",
+            fuelCost = string.format("%.2f", cost),
+            fuelTank = string.format("%.2f", fuel)
+        })
+        Wait(600)
+    end
+    if cost ~= 0 then
+        TriggerServerEvent("ND_Fuel:pay", cost)
+        cost = 0
+    end
+end
+
 -- Refuel the vehicle.
 CreateThread(function()
     while true do
         Wait(2000)
         if vehicleFueling then
-            local classMultiplier = config.vehicleClasses[GetVehicleClass(vehicleFueling)]
-            if usingCan then
-                while usingCan do
-                    local fuel = GetFuel(vehicleFueling)
-                    if fuel < 97 then
-                        SetFuel(vehicleFueling, fuel + (2.5 / classMultiplier))
-                    else
-                        fuel = 100.0
-                        SetFuel(vehicleFueling, fuel)
-                        vehicleFueling = false
-                    end
-                    Wait(500)
-                end
-            else
-                local cost = 0
-                while vehicleFueling do
-                    local fuel = GetFuel(vehicleFueling)
-                    if not DoesEntityExist(vehicleFueling) then
-                        dropNozzle()
-                        break
-                    end
-                    fuel = GetFuel(vehicleFueling)
-                    cost = cost + ((2.0 / classMultiplier) * config.fuelCostMultiplier) - math.random(0, 100) / 100
-                    if not config.standalone then
-                        if NDCore.Functions.GetSelectedCharacter().bank < cost then
-                            SendNUIMessage({
-                                type = "warn"
-                            })
-                            vehicleFueling = false
-                            break
-                        end
-                    end
-                    if fuel < 97 then
-                        SetFuel(vehicleFueling, fuel + ((2.0 / classMultiplier) - math.random(0, 100) / 100))
-                    else
-                        fuel = 100.0
-                        SetFuel(vehicleFueling, fuel)
-                        vehicleFueling = false
-                    end
-                    SendNUIMessage({
-                        type = "update",
-                        fuelCost = string.format("%.2f", cost),
-                        fuelTank = string.format("%.2f", fuel)
-                    })
-                    Wait(600)
-                end
-                if not config.standalone and cost ~= 0 then
-                    TriggerServerEvent("ND_Fuel:pay", cost)
-                    cost = 0
-                end
-            end
+            vehicleIsFueling()
         end
     end
 end)
@@ -300,16 +303,17 @@ CreateThread(function()
                     fuelCost = string.format("%.2f", cost),
                     fuelTank = "0.0"
                 })
-                if not config.standalone then
-                    if NDCore.Functions.GetSelectedCharacter().bank < cost then 
-                        SendNUIMessage({
-                            type = "warn"
-                        })
-                    end
+
+                local player = exports["ND_Core"]:getPlayer()
+                if (player and player.bank or 0) < cost then
+                    SendNUIMessage({
+                        type = "warn"
+                    })
                 end
+
                 Wait(800)
             end
-            if not config.standalone and cost ~= 0 then
+            if cost ~= 0 then
                 TriggerServerEvent("ND_Fuel:pay", cost)
             end
         end
@@ -324,39 +328,11 @@ CreateThread(function()
         if pump then
             wait = 0
             if not holdingNozzle and not nozzleInVehicle and not nozzleDropped then
-                local jerryCanText = ""
-                local ammo = GetAmmoInPedWeapon(ped, 883325847)
-                local weapon = HasPedGotWeapon(ped, 883325847)
-                local price = config.jerryCanPrice
-                if not weapon then
-                    jerryCanText = " \n$" .. price .. " buy Jerry Can [G]"
-                elseif weapon and GetSelectedPedWeapon(ped) == 883325847 and ammo < 4500 then
-                    price = math.floor(config.jerryCanrefillCost - (config.jerryCanrefillCost / (4500 / ammo)))
-                    jerryCanText = " \n$" .. price .. " refill Jerry Can [G]"
-                end
-                DrawText3D(pump.x, pump.y, pump.z + 1.2, "Grab Nozzle [E]" .. jerryCanText)
+                DrawText3D(pump.x, pump.y, pump.z + 1.2, "Grab Nozzle [E]")
                 if IsControlJustPressed(0, 51) then
                     grabNozzleFromPump()
                     Wait(1000)
                     ClearPedTasks(ped)
-                end
-                if IsControlJustPressed(0, 47) then
-                    if not config.standalone then
-                        if NDCore.Functions.GetSelectedCharacter().bank > price then
-                            TriggerServerEvent("ND_Fuel:jerryCan", price)
-                            if HasPedGotWeapon(ped, 883325847) then
-                                SetPedAmmo(ped, 883325847, 4500)
-                            else
-                                GiveWeaponToPed(ped, 883325847, 4500, false, true)
-                            end
-                        end
-                    else
-                        if HasPedGotWeapon(ped, 883325847) then
-                            SetPedAmmo(ped, 883325847, 4500)
-                        else
-                            GiveWeaponToPed(ped, 883325847, 4500, false, true)
-                        end
-                    end
                 end
             elseif holdingNozzle and not nearTank and pumpHandle == usedPump then
                 DrawText3D(pump.x, pump.y, pump.z + 1.2, "Return Nozzle [E]")

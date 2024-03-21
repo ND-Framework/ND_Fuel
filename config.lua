@@ -1,33 +1,32 @@
 config = {
-    standalone = false, -- if you're using ND Framework keep this false. It will use your money and pay for gas.
     jerryCanPrice = 100, -- jery cans can be purchased from the gas statoin.
     jerryCanrefillCost = 50, -- The price of the jerrycans refill, this will be calculated and adjusted to how much is left in it.
-    fuelCostMultiplier = 1.0, -- 2.0 will double the price of fuel and 1.5 will increase it by half.
+    fuelCostMultiplier = 0.1, -- 2.0 will double the price of fuel and 1.5 will increase it by half.
 
     -- Class multipliers. If you want SUVs to use less fuel, you can change it to anything under 1.0, and vise versa.
     vehicleClasses = {
-        [0] = 0.7, -- Compacts
-        [1] = 1.1, -- Sedans
-        [2] = 1.7, -- SUVs
-        [3] = 1.1, -- Coupes
-        [4] = 1.5, -- Muscle
-        [5] = 1.3, -- Sports Classics
-        [6] = 1.5, -- Sports
-        [7] = 1.5, -- Super
-        [8] = 0.6, -- Motorcycles
-        [9] = 1.2, -- Off-road
-        [10] = 1.0, -- Industrial
-        [11] = 1.0, -- Utility
-        [12] = 1.2, -- Vans
-        [13] = 0.0, -- Cycles
-        [14] = 1.0, -- Boats
-        [15] = 1.0, -- Helicopters
-        [16] = 1.0, -- Planes
-        [17] = 1.0, -- Service
-        [18] = 1.0, -- Emergency
-        [19] = 1.9, -- Military
-        [20] = 1.8, -- Commercial
-        [21] = 1.0, -- Trains
+        [0] = 0.05, -- Compacts
+        [1] = 0.05, -- Sedans
+        [2] = 0.07, -- SUVs
+        [3] = 0.05, -- Coupes
+        [4] = 0.07, -- Muscle
+        [5] = 0.06, -- Sports Classics
+        [6] = 0.06, -- Sports
+        [7] = 0.07, -- Super
+        [8] = 0.03, -- Motorcycles
+        [9] = 0.05, -- Off-road
+        [10] = 0.05, -- Industrial
+        [11] = 0.05, -- Utility
+        [12] = 0.05, -- Vans
+        [13] = 0.00, -- Cycles
+        [14] = 0.05, -- Boats
+        [15] = 0.5, -- Helicopters
+        [16] = 0.5, -- Planes
+        [17] = 0.05, -- Service
+        [18] = 0.05, -- Emergency
+        [19] = 0.05, -- Military
+        [20] = 0.05, -- Commercial
+        [21] = 0.05, -- Trains
     },
 
     electricVehicles = {
